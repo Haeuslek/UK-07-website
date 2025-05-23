@@ -2,8 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: "BBC Wisdom Web App - Highly Available, Low-Cost, Scalable Architecture"
 
 Parameters:
-  KeyName: 
-    Default: bbc-key
+  KeyName:
     Description: Name of an existing EC2 KeyPair to enable SSH access
     Type: AWS::EC2::KeyPair::KeyName
 
@@ -98,7 +97,7 @@ Resources:
   WebServerSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Enable HTTP/HTTPS access
+      GroupDescription: Enable HTTP/HTTPS/SSH access
       VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -108,6 +107,10 @@ Resources:
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
@@ -140,10 +143,10 @@ Resources:
         UserData:
           Fn::Base64: !Sub |
             #!/bin/bash
-            yum update -y
-            yum install -y httpd git nodejs npm
+            yum clean all -y
+            yum install -y nodejs git
             cd /home/ec2-user
-            git clone https://github.com/dein-repo/bbc-webseite.git
+            git clone https://github.com/Haeuslek/UK-07-website.git
             cd bbc-webseite
             npm install
             node server.js &
@@ -207,10 +210,15 @@ Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: bbc-wisdom-static-content
-      AccessControl: PublicRead
+      BucketName: !Sub bbc-wisdom-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
       WebsiteConfiguration:
         IndexDocument: index.html
+
 
 Outputs:
   WebsiteURL:
