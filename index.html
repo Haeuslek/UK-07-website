@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wisdoms</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+
+    <h1>Wisdoms</h1>
+
+
+
+    <div class="info">
+        <div class="info__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none">
+                <path fill="#393a37"
+                    d="m12 1.5c-5.79844 0-10.5 4.70156-10.5 10.5 0 5.7984 4.70156 10.5 10.5 10.5 5.7984 0 10.5-4.7016 10.5-10.5 0-5.79844-4.7016-10.5-10.5-10.5zm.75 15.5625c0 .1031-.0844.1875-.1875.1875h-1.125c-.1031 0-.1875-.0844-.1875-.1875v-6.375c0-.1031.0844-.1875.1875-.1875h1.125c.1031 0 .1875.0844.1875.1875zm-.75-8.0625c-.2944-.00601-.5747-.12718-.7808-.3375-.206-.21032-.3215-.49305-.3215-.7875s.1155-.57718.3215-.7875c.2061-.21032.4864-.33149.7808-.3375.2944.00601.5747.12718.7808.3375.206.21032.3215.49305.3215.7875s-.1155.57718-.3215.7875c-.2061.21032-.4864.33149-.7808.3375z">
+                </path>
+            </svg>
+        </div>
+        <div class="info__title">Copyed to clipboard</div>
+        <div class="info__close"><svg height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="m15.8333 5.34166-1.175-1.175-4.6583 4.65834-4.65833-4.65834-1.175 1.175 4.65833 4.65834-4.65833 4.6583 1.175 1.175 4.65833-4.6583 4.6583 4.6583 1.175-1.175-4.6583-4.6583z"
+                    fill="#393a37"></path>
+            </svg></div>
+    </div>
+
+
+    <div class="card">
+        <p class="heading">
+        </p>
+        <p>
+            Posted By
+        </p>
+        <p id="author">
+        </p>
+    </div>
+
+    <div class="action-container">
+        <div class="like-wrapper">
+            <i class="fa-regular fa-thumbs-up like-icon fa-2xl" id="like"></i>
+            <div class="like-count" id="like-count">0</div>
+        </div>
+
+        <div class="dislike-wrapper">
+            <i class="fa-regular fa-thumbs-up fa-rotate-180 fa-2xl dislike-icon" id="dislike"></i>
+            <div class="dislike-count" id="dislike-count">0</div>
+        </div>
+    </div>
+
+    <button id="shuffle" class="button"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+
+    <input placeholder="Type your wisdom here..." class="input" id="message" name="text" type="text" required />
+    <input placeholder="Your Name" class="input" name="text" id="name" type="text" required />
+
+    <button id="submit" class="button">Send!</button>
+
+
+    <div class="loader">
+        <div class="check">
+            <span class="check-one"></span>
+            <span class="check-two"></span>
+        </div>
+    </div>
+
+    <elevenlabs-convai agent-id="agent_01jvw02jwre9qvjhswyy0wacbe"></elevenlabs-convai>
+    <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
+
+
+
+    <a href="https://berufsbildungscenter.ch/" target="_blank">
+        <img id="bbc-image" src="./images/BBC-BerufsBildungsCenter.svg" alt="BBC Image" />
+    </a>
+</body>
+<script>
+
+    const likeCount = document.querySelector('.like-count');
+    const dislikeCount = document.querySelector('.dislike-count');
+
+    let pendingVote = null;
+    let baseLikes = 0;
+    let baseDislikes = 0;
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var btn = document.querySelector('#submit'),
+            loader = document.querySelector('.loader'),
+            check = document.querySelector('.check');
+
+        btn.addEventListener('click', function () {
+            // Ladeanimation
+            loader.classList.add('active');
+            loader.addEventListener('animationend', function () {
+                check.classList.add('active');
+                setTimeout(() => {
+                    check.classList.remove('active');
+                    loader.classList.remove('active');
+                }, 4000);
+            }, { once: true });
+
+            // Eingaben auslesen
+            const name = document.getElementById('name').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            const infoBox = document.querySelector('.info');
+            const infoTitle = document.querySelector('.info__title');
+
+            // Nachricht anzeigen
+            infoTitle.textContent = 'Successfully saved!';
+            infoBox.classList.add('show');
+
+            // Automatisch ausblenden nach 3 Sek.
+            setTimeout(() => {
+                infoBox.classList.remove('show');
+                infoTitle.textContent = 'Copyed to clipboard'; // zurücksetzen für nächsten Card-Klick
+            }, 3000);
+
+
+            if (!name || !message) return;
+
+            // vorhandene Einträge holen oder neues Array starten
+            const savedEntries = JSON.parse(localStorage.getItem('entries') || '[]');
+            savedEntries.push({ name, message });
+
+            // zurück in localStorage speichern
+            localStorage.setItem('entries', JSON.stringify(savedEntries));
+
+            // Optional: Felder leeren
+            document.getElementById('name').value = '';
+            document.getElementById('message').value = '';
+        });
+
+
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.querySelector('#submit');
+        const loader = document.querySelector('.loader');
+        const check = document.querySelector('.check');
+        const shuffleButton = document.getElementById('shuffle');
+        const shuffleIcon = shuffleButton.querySelector('i');
+        const heading = document.querySelector('.card .heading');
+        const author = document.getElementById('author');
+
+        const card = document.querySelector('.card');
+        const info = document.querySelector('.info');
+        const infoClose = document.querySelector('.info__close');
+
+
+        // Submit: Ladeanimation
+        btn.addEventListener('click', function () {
+            loader.classList.add('active');
+            loader.addEventListener('animationend', function () {
+                check.classList.add('active');
+                setTimeout(() => {
+                    check.classList.remove('active');
+                    loader.classList.remove('active');
+                }, 4000);
+            }, { once: true });
+        });
+
+        // Shuffle: Text und Icon-Animation
+        shuffleButton.addEventListener('click', function () {
+            shuffleIcon.classList.add('rotate-twice');
+            setTimeout(() => {
+                shuffleIcon.classList.remove('rotate-twice');
+            }, 1000);
+
+            const currentMessage = heading.textContent;
+
+            if (pendingVote === 'like') {
+                fetch('/like', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: currentMessage })
+                });
+            }
+            if (pendingVote === 'dislike') {
+                fetch('/dislike', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: currentMessage })
+                });
+            }
+
+            pendingVote = null;
+
+
+            // Hole zufälligen Eintrag vom Server
+            fetch('/random')
+                .then(res => {
+                    if (!res.ok) throw new Error('Keine Daten erhalten.');
+                    return res.json();
+                })
+                .then(data => {
+                    heading.textContent = data.message;
+                    author.textContent = data.name;
+                    baseLikes = data.likes;
+                    baseDislikes = data.dislikes;
+                    likeCount.textContent = baseLikes;
+                    dislikeCount.textContent = baseDislikes;
+
+
+                    // Buttons zurücksetzen
+                    likeButton.classList.remove('active');
+                    dislikeButton.classList.remove('active');
+                })
+                .catch(err => {
+                    console.error('Fehler beim Abrufen:', err);
+                    heading.textContent = 'Keine Daten gefunden.';
+                    author.textContent = 'Unbekannt';
+                });
+
+        });
+
+
+        // Card-Klick: Text kopieren + Info-Badge zeigen
+        card.addEventListener('click', function () {
+            const textToCopy = heading.textContent;
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    info.classList.add('show');
+                    setTimeout(() => {
+                        info.classList.remove('show');
+                    }, 4000);
+                })
+                .catch(err => {
+                    console.error("Fehler beim Kopieren", err);
+                });
+        });
+
+
+        // Manuelles Schließen per X-Icon
+        infoClose.addEventListener('click', function () {
+            info.classList.remove('show');
+        });
+    });
+
+    document.getElementById('submit').addEventListener('click', function () {
+        const name = document.getElementById('name').value.trim();
+        const message = document.getElementById('message').value.trim();
+
+        fetch('/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, message })
+        })
+            .then(res => res.text())
+            .then(msg => {
+                console.log(msg);
+                document.getElementById('name').value = '';
+                document.getElementById('message').value = '';
+            })
+            .catch(err => {
+                console.error('Fehler beim Senden:', err);
+            });
+    });
+
+
+    const likeButton = document.querySelector('#like');
+    const dislikeButton = document.querySelector('#dislike');
+    const heading = document.querySelector('.card .heading');
+
+    likeButton.addEventListener('click', () => {
+        if (!likeButton.classList.contains('active')) {
+            pendingVote = 'like';
+            likeButton.classList.add('active');
+            dislikeButton.classList.remove('active');
+            likeCount.textContent = baseLikes + 1;
+            dislikeCount.textContent = baseDislikes;
+        }
+    });
+
+    dislikeButton.addEventListener('click', () => {
+        if (!dislikeButton.classList.contains('active')) {
+            pendingVote = 'dislike';
+            dislikeButton.classList.add('active');
+            likeButton.classList.remove('active');
+            dislikeCount.textContent = baseDislikes + 1;
+            likeCount.textContent = baseLikes;
+        }
+    });
+
+    document.addEventListener('mousemove', function (e) {
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
+
+        // leichtes Gegenbewegen (invertiert und verstärkt)
+        const offsetX = (0.5 - x) * -5;
+        const offsetY = (0.5 - y) * -5;
+
+        document.body.style.backgroundPosition = `${50 + offsetX}% ${50 + offsetY}%`;
+    });
+
+
+    window.addEventListener('DOMContentLoaded', () => {
+        // Automatisch einen Zufallspruch laden
+        fetch('/random')
+            .then(res => {
+                if (!res.ok) throw new Error('Keine Daten erhalten.');
+                return res.json();
+            })
+            .then(data => {
+                heading.textContent = data.message;
+                author.textContent = data.name;
+                baseLikes = data.likes;
+                baseDislikes = data.dislikes;
+                likeCount.textContent = baseLikes;
+                dislikeCount.textContent = baseDislikes;
+
+                // Buttons zurücksetzen
+                likeButton.classList.remove('active');
+                dislikeButton.classList.remove('active');
+                pendingVote = null;
+            })
+            .catch(err => {
+                console.error('Fehler beim ersten Abruf:', err);
+                heading.textContent = 'Keine Daten gefunden.';
+                author.textContent = 'Unbekannt';
+            });
+    });
+
+
+</script>
+
+
+</html>
