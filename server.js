@@ -22,9 +22,9 @@ app.get('/', (req, res) => {
 
 // MySQL-Verbindung
 const db = mysql.createConnection({
-    host: 'wisdom-db-cluster.cluster-c9y1sbfq8hob.us-east-1.rds.amazonaws.com',
-    user: 'admin',
-    password: 'bbcwisdom123',
+    host: 'localhost',
+    user: 'root',
+    password: '1234',
     database: 'UK07',
     port: 3306
 });
