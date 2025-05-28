@@ -2,18 +2,12 @@ CREATE DATABASE IF NOT EXISTS UK07;
 
 USE UK07;
 
-CREATE TABLE submissions (
+CREATE TABLE if not exists submissions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     message VARCHAR(255) NOT NULL unique,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-SELECT * FROM submissions;
-
-DELETE FROM submissions
-where id = '87';
-DROP TABLE submissions;
 
 INSERT INTO submissions (name, message) VALUES
 ('Albert Einstein', 'Imagination is more important than knowledge.'),
@@ -31,8 +25,4 @@ INSERT INTO submissions (name, message) VALUES
 ALTER TABLE submissions
 ADD COLUMN likes INT DEFAULT 0,
 ADD COLUMN dislikes INT DEFAULT 0;
-
-UPDATE submissions
-SET dislikes = 1871435
-WHERE id = 86;
 

@@ -143,7 +143,13 @@ Resources:
         UserData:
           Fn::Base64: !Sub |
             #!/bin/bash
+            sudo su
             yum clean all -y
+            cd /usr/local
+            curl -O https://nodejs.org/dist/v16.20.2/node-v16.20.2-linux-x64.tar.xz
+            tar -xf node-v16.20.2-linux-x64.tar.xz
+            ln -s /usr/local/node-v16.20.2-linux-x64/bin/node /usr/bin/node
+            ln -s /usr/local/node-v16.20.2-linux-x64/bin/npm /usr/bin/npm
             yum install -y nodejs git
             cd /home/ec2-user
             git clone https://github.com/Haeuslek/UK-07-website.git
